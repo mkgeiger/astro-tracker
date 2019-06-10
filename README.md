@@ -50,6 +50,16 @@ The TB6612FNG is a great motor driver that is perfect for interfacing a single b
 
 ### Vixen MT-1 stepper motor
 
+In my mount (Vixen GP) two of these motors are used for rectascension and declination. This stepper motor has following data:
+* motor max speed factor: 32
+* motor steps per full turn: 48
+* gear box ratio: 1:120
+* worm wheel ratio (Vixen GP mount): 1:144
+
+![vixen_mt1](/hardware/vixen_mt1.jpg)
+
+![mt1_stepper_connector](/datasheets/mt1_stepper_connector.png)
+
 ### Power supply unit
 
 ### Connectors
