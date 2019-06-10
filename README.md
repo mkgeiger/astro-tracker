@@ -62,10 +62,40 @@ In my mount (Vixen GP) two of these motors are used for rectascension and declin
 
 ### Power supply unit
 
+This DC/DC converter is a cheap step down module based on the LM2596 chip. This module can be obtained at Ebay for about 1€. The input voltage depends on the stepper motors, for the Vixen MT-1 motors it is 12V. The output voltage has to be trimmed to 5V.
+
+![power_LM2596S](/hardware/power_LM2596S.jpg)
+
 ### Connectors
 
+#### Stepper motors (SUB-D 15)
+
+![connectors](/datasheets/connectors.png)
+
+#### Autoguider port ST-4 (RJ-11/12)
+
+![st4_autoguiding](/hardware/st4_autoguiding.png)
+
 ### PCB layout
+
+The PCB layout is created with Eagle Autorouter in a way to place all modules mentioned above near to each other on a single PCB. The Eagle PCB file can be downloaded from [here](/hardware/astrotracker.brd).
+
+![pcb](/hardware/pcb.png)
 
 ## Software
 
 ## Photos
+
+Assembled PCB:
+![pcb](/photos/pcb.jpg)
+
+Opened case:
+![open1](/photos/open1.jpg)
+
+![open2](/photos/open2.jpg)
+
+Finished device:
+![closed](/photos/closed.jpg)
+
+System view (incl. Vixen GP mount):
+![system](/photos/system.jpg)
