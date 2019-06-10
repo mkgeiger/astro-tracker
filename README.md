@@ -42,6 +42,12 @@ For calibrating the CPU frequency to less than 1ppm a high precision timebase is
 
 ### Stepper motor controller
 
+The TB6612FNG is a great motor driver that is perfect for interfacing a single bipolar/unipolar stepper motor. The MOSFET-based H-bridges are much more efficient than the BJT-based H-bridges used in older drivers such as the L298N, which allows more current to be delivered to the motors and less to be drawn from the logic supply. This little breakout board gives direct access to all of the features of the TB6612FNG and adds power supply capacitors and reverse battery protection on the motor supply.
+
+![pololu_TB6612FNG](/hardware/pololu_TB6612FNG.jpg)
+
+![pololu_schematic](/datasheets/pololu_schematic.png)
+
 ### Vixen MT-1 stepper motor
 
 ### Power supply unit
