@@ -60,6 +60,14 @@ In my mount (Vixen GP) two of these motors are used for rectascension and declin
 
 ![mt1_stepper_connector](/datasheets/mt1_stepper_connector.png)
 
+### Bosch VMB 12V stepper motor
+
+For an other mount (EQ3) this motor is used only for rectascension. This stepper motor has following data:
+* motor max speed factor: 32
+* motor steps per full turn: 24
+* gear box ratio: 384:116375
+* worm wheel ratio (EQ3 mount): 1:138
+
 ### Power supply unit
 
 This DC/DC converter is a cheap step down module based on the LM2596 chip. This module can be obtained at Ebay for about 1€. The input voltage depends on the stepper motors, for the Vixen MT-1 motors it is 12V. The output voltage has to be trimmed to 5V.
