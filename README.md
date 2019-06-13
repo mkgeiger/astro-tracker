@@ -82,7 +82,90 @@ The PCB layout is created with Eagle Autorouter in a way to place all modules me
 
 ![pcb](/hardware/pcb.png)
 
-## Software
+## [Software](/AstroTracker/AstroTracker.ino)
+
+### Initialization
+
+#### Shared memory between tasks
+
+For this purpose a mutex semaphore is created.
+
+#### Exchanging data between tasks on different cores
+
+For sending LX200 messages to the process task a message queue is created.
+
+#### GPIOs
+
+Most pins are configured as output pins, except the autoguiding and the 1PPS pin. These are configured respectively as input pins with pullups and as interrupt pin.
+
+#### Non volatile memory
+
+All configured motor-, gear- and speed-parameters are read during every startup.
+
+#### High precision HW counters frequency measurement
+
+At every startup the clock frequency of the four 64-bit HW counters is measured. This is done with help of the 1PPS pulse from the GPS module. Every precise second (1ppm jitter) the counter values are read out to determine the counting frequency. 10 values are taken to calculate the average counting frequency. This value is taken to calculate the exact parameterisation of the different stepping speeds.
+
+#### Timers
+
+For reaching the highest precision in tracking all four 64-bit timers are used. 
+For further information see chapter [Interrupts].
+
+#### Parameterisation
+
+For the parameterisation the values from the non volatile memory (motor-, gear- and speed parameters) and the determined counting clock frequency are used for calculating the different stepping speeds.
+
+#### WIFI
+
+WIFI is initialized as an access point to be able to connect with a mobile phone also without an existing network in the field. The access parameters are: IP: 192.168.4.1, SSID: ASTRO_TRACKER, Password: see source code (default: xxxxxxxx).
+
+### Tasks
+
+The overall architecture splits the SW into two parts running on the two independant CPU cores. I decided to run the server tasks on core 0 (Pro CPU) and the time critical tasks and interrupts on core 1 (App CPU). 
+
+#### LX200 server task (core 0, low priority)
+
+This tasks implements a WIFI server to accept LX200 commands from a Sky Safari client, like a mobile phone with Sky Safari for Android. Sky Safari does not make a persistent connection, so each command query is managed as a single independent client. Only the LX200 commands (like GOTO, ALIGN, STOP, etc.) which are sent by Sky Safari are supported actually. The commands are parsed to extract informations like coordinates which are sent via message queue to the "Process Commands" task running on core 0. The northern or southern hemisphere parameter is determined by the "current site latitude" LX200 command.
+
+#### Web server task (core 0, high priority)
+
+This task offers a webpage to any client. In a webbowser the user can configure the individual parameters of the stepper motors, like steps per rotation and maximum speed factor. Also the gear and worm wheel ratio can be configured. Also the user has the posibility to choose the tracking speed of the rectascenson axis. All these parameters are stored in a non volatile memory to be present with the next boot of the system.
+
+![webpage](/photos/webpage_settings.png)
+
+#### Process commands task(core 1, high priority)
+
+This task is responsible for receiving the parsed LX200 commands and for calculating the stepping control parameters for the stepper motors, like stepping speed, direction up/down and left/right and the number of steps for fast foreward/backward slewing (GOTO). For determining the fast foreward/backward steps in rectascension direction, the time for slewing to the destination object and the rotation of the earth around the rectascension axis are considered in the calculation formulas.
+
+#### Current position task (core 1, low priority)
+
+This task is responsible for sending the actual position (rectascension and declination) back to the Sky Safari client. Sky Safari uses this information to draw a crosshair on the sky where the telescope is pointing to. An update of this information is sent every 100ms.
+
+#### Autoguider task (core 1, loop(), very low priority)
+
+This task checks continuously the autoguider ports to correct the deviation with 0.5x speed in DEC-, DEC+, RA- direction and 1.5x speed in RA+ direction. Apart from this this task is also responsible to let the alive LED blink with 1Hz.
+
+### Interrupts
+
+#### 1 PPS interrupts
+
+This interrupt is triggered every second by the GPS module. It used initially for calibrating the high resolution counters. At startup 10 samples of counter values are taken every second to calculate the average counting frequency. This is needed to reach a high accuracy.
+
+#### Normal speed timer interrupt
+
+This timer is programmed to come for every single full step for the rectascension stepper motor when tracking is active. Tracking speeds can be stellar, lunar, solar and various user defined speeds.
+
+#### Fast speed timer interrupt
+
+This timer is programmed to come for every single full step for both rectascension and declination stepper motors when the user presses the up/down/left/right buttons or when slewing to a destination object is currently active (GOTO). The slewing speed is the maximum possible speed for the motors, in case of MT-1 motors it is 32x.
+
+#### Correction RA+ interrupt
+
+This timer is programmed to come for positive rectascension autoguiding corrections. The speed is then with factor 1.5x.
+
+#### Correction RA-, DEC-, DEC+ interrupt
+
+This timer is programmed to come for negative rectascension, negativ- and positive declination autoguiding corrections. The speed is then with factor 0.5x.
 
 ## Photos
 
